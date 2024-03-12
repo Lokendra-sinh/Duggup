@@ -1,6 +1,24 @@
 <script lang="ts" type="module">
 import { Button } from '$lib/Components/ui/button'
 import * as Avatar from '$lib/Components/ui/avatar'
+import { writable } from 'svelte/store';
+import { onMount } from 'svelte';
+import Skeleton from './ui/skeleton/skeleton.svelte';
+
+
+let avatarLoading = writable(true);
+    let imageSrc = "https://media.licdn.com/dms/image/D4E03AQF-fLP5TtdtOQ/profile-displayphoto-shrink_400_400/0/1677089436637?e=2147483647&v=beta&t=atyfcjRdiW7_UzcLcJXTmlRIfkPurv2GD85CKwpRGnc";
+
+    onMount(() => {
+    const img = new Image();
+    img.onload = () => {
+        avatarLoading.set(false);
+    }
+    img.onerror = () => avatarLoading.set(false); // Optionally handle errors
+    img.src = imageSrc;
+  });
+
+
 </script>
 
 <nav class="flex items-center justify-between py-2 border-b border-duggup_horizontal_dots mx-[180px] border-dotted">
@@ -72,8 +90,15 @@ import * as Avatar from '$lib/Components/ui/avatar'
 
    
     <Avatar.Root class="border border-duggup_black_variant">
-        <Avatar.Image src="https://media.licdn.com/dms/image/D4E03AQF-fLP5TtdtOQ/profile-displayphoto-shrink_400_400/0/1677089436637?e=2147483647&v=beta&t=atyfcjRdiW7_UzcLcJXTmlRIfkPurv2GD85CKwpRGnc" class="w-full" alt="Kiran" />
-        <Avatar.Fallback>Kiran - Duggup</Avatar.Fallback>
+        {#if $avatarLoading}
+        <Skeleton class="w-full h-full rounded-full bg-gray-400" />
+      {:else}
+        <Avatar.Image
+          src={imageSrc}
+          class="w-full"
+          alt="Krishna Kiran - Duggup"
+        />
+      {/if}
     </Avatar.Root>
 
     <Button variant="ghost" class="flex gap-4 hover:none">

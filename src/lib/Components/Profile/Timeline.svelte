@@ -3,17 +3,25 @@
 
 import * as Avatar from '$lib/Components/ui/avatar';
 import { timelineItems } from '$lib/Data/Dummy';
-const duggup_icon = import.meta.env.VITE_DUGGUP_ICON;
-const betterup_icon = import.meta.env.VITE_BETTERUP_ICON;
+import { writable } from 'svelte/store';
+import ImageLoader from '../ui/ImageLoader/ImageLoader.svelte';
+
+let isImageLoading = writable(true);
+
+function handleImageLoad(imageUrl: string) {
+    isImageLoading.set(false);
+}
+
+
 </script>
   
 <section class="ml-[60px] flex flex-col gap-px">
-{#each timelineItems as item}
+{#each timelineItems as item, index}
     {#if item.type === "post" && 'posts' in item}
         <div class="flex items-center gap-8 px-12 py-7 border-l-2 border-dotted border-[#778FB1] relative">
-            {#each item.posts as post}
+            {#each item.posts as post, postIndex}
                 <div class="w-[344px] h-[226px] rounded-[12px] border-[0.5px] border-[#D0D5DD] flex flex-col items-center hover:shadow-md hover:cursor-pointer">
-                    <img src={post.imageUrl} alt="post" class="w-[344px] h-[136px] object-cover rounded-t-[12px]" />
+                    <img src={post.imageUrl} class="w-[344px] h-[136px] object-cover rounded-t-[12px]" alt="ima" on:load={() => handleImageLoad(post.imageUrl)} />
                     <p class="text-sm font-normal text-[#141618] p-5">{post.convincingDescription}</p>
                 </div>
             {/each}

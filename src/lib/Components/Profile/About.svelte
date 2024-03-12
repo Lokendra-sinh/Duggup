@@ -1,12 +1,18 @@
 <script>
     import * as Avatar from '$lib/Components/ui/avatar';
     import { Button } from '$lib/Components/ui/button';
+    import Skeleton from '../ui/skeleton/skeleton.svelte';
     import Reload from "svelte-radix/Reload.svelte";
     import { userFollowState } from '$lib/Store/UserFollowState';
+    import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
+
+
     let isFollowed = false;
     let isLoading = false;
     let userName = "Krishna Kiran";
-  
+    let avatarLoading = writable(true);
+    let imageSrc = "https://media.licdn.com/dms/image/D4E03AQF-fLP5TtdtOQ/profile-displayphoto-shrink_400_400/0/1677089436637?e=2147483647&v=beta&t=atyfcjRdiW7_UzcLcJXTmlRIfkPurv2GD85CKwpRGnc";
     async function toggleFollow() {
       isLoading = true;
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -23,6 +29,17 @@
         userFollowState.set({ isFollowing: false, message: '' });
       }, 3000);
     }
+
+
+    onMount(() => {
+    const img = new Image();
+    img.onload = () => {
+        avatarLoading.set(false);
+    }
+    img.onerror = () => avatarLoading.set(false); // Optionally handle errors
+    img.src = imageSrc;
+  });
+
   </script>
   
   
@@ -34,8 +51,15 @@
 
    
         <Avatar.Root class="w-[120px] h-[120px] border-[5px] border-duggup_profile_border">
-            <Avatar.Image src="https://media.licdn.com/dms/image/D4E03AQF-fLP5TtdtOQ/profile-displayphoto-shrink_400_400/0/1677089436637?e=2147483647&v=beta&t=atyfcjRdiW7_UzcLcJXTmlRIfkPurv2GD85CKwpRGnc" class="w-full" alt="Kiran" />
-            <Avatar.Fallback>Kiran - Duggup</Avatar.Fallback>
+            {#if $avatarLoading}
+        <Skeleton class="w-[120px] h-[120px] rounded-full bg-gray-400" />
+      {:else}
+        <Avatar.Image
+          src={imageSrc}
+          class="w-full"
+          alt="Kiran"
+        />
+      {/if}
         </Avatar.Root>
 
         <p class="text-[24px] font-bold text-center leading-7 text-[#4B5C6D]">Krishna <br/> Kiran</p>
